@@ -1,65 +1,120 @@
-import Image from "next/image";
+'use client';
+
+import { useState } from 'react';
+import { PRForm } from '@/components/PRForm';
+import { DiffViewer } from '@/components/DiffViewer';
+import { GenerateButton } from '@/components/GenerateButton';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Card, CardContent } from '@/components/ui/card';
+import { GitPullRequest, FileCode, AlertCircle } from 'lucide-react';
+
+interface PRFile {
+  filename: string;
+  additions: number;
+  deletions: number;
+  patch?: string;
+}
+
+interface PRData {
+  files: PRFile[];
+  owner: string;
+  repo: string;
+  pull_number: string;
+}
 
 export default function Home() {
+  const [prData, setPrData] = useState<PRData | null>(null);
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [statusMessage, setStatusMessage] = useState('');
+
+  const handlePRFetched = (data: PRData) => {
+    setPrData(data);
+    setError('');
+    setStatusMessage(`Successfully loaded ${data.files.length} changed file(s).`);
+  };
+
+  const handleError = (errorMsg: string) => {
+    setError(errorMsg);
+    setPrData(null);
+    setStatusMessage('');
+  };
+
+  const handleLoading = (loading: boolean) => {
+    setIsLoading(loading);
+    if (loading) {
+      setStatusMessage('Connecting to GitHub...');
+    }
+  };
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <main className="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-5xl mx-auto space-y-8">
+        {/* Header */}
+        <header className="text-center space-y-4">
+          <div className="inline-flex items-center justify-center gap-3 mb-4">
+            <div className="p-3 rounded-2xl bg-gradient-to-br from-violet-500/20 to-purple-500/20 border border-violet-500/30">
+              <GitPullRequest className="h-10 w-10 text-violet-400" />
+            </div>
+          </div>
+          <h1 className="text-4xl sm:text-5xl font-bold bg-gradient-to-r from-white via-violet-200 to-purple-200 bg-clip-text text-transparent">
+            PR AI Documentation Assistant
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            Paste a GitHub PR link to view diffs and generate AI-powered technical documentation
           </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+        </header>
+
+        {/* Main Card */}
+        <Card className="bg-card/30 backdrop-blur-xl border-border/50 shadow-2xl shadow-violet-500/5">
+          <CardContent className="p-6 space-y-6">
+            {/* PR Form */}
+            <PRForm
+              onPRFetched={handlePRFetched}
+              onError={handleError}
+              onLoading={handleLoading}
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+
+            {/* Status Message */}
+            {statusMessage && !error && (
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <FileCode className="h-4 w-4" />
+                <span>{statusMessage}</span>
+              </div>
+            )}
+
+            {/* Error Alert */}
+            {error && (
+              <Alert variant="destructive" className="bg-red-500/10 border-red-500/50">
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
+
+            {/* Generate Button */}
+            {prData && <GenerateButton prData={prData} />}
+          </CardContent>
+        </Card>
+
+        {/* Diff Viewer */}
+        {prData && (
+          <section className="space-y-4">
+            <div className="flex items-center gap-2 text-lg font-semibold text-foreground">
+              <FileCode className="h-5 w-5 text-primary" />
+              <span>Changed Files</span>
+              <span className="ml-2 px-2.5 py-0.5 text-xs font-medium bg-primary/20 text-primary rounded-full">
+                {prData.files.length}
+              </span>
+            </div>
+            <DiffViewer files={prData.files} />
+          </section>
+        )}
+
+        {/* Footer */}
+        <footer className="text-center text-sm text-muted-foreground pt-8 border-t border-border/30">
+          <p>Powered by Groq AI • Saves to Google Docs</p>
+        </footer>
+      </div>
+    </main>
   );
 }
