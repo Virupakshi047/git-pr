@@ -119,7 +119,96 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* Markdown Editor Styles */
+.w-md-editor {
+  --md-editor-bg-color: transparent !important;
+  --md-editor-border-color: transparent !important;
+}
+
+.w-md-editor-text-pre>code,
+.w-md-editor-text-input {
+  font-family: var(--font-mono), ui-monospace, monospace !important;
+  font-size: 0.875rem !important;
+  line-height: 1.6 !important;
+}
+
+.w-md-editor-content {
+  background: oklch(0.15 0.04 265) !important;
+}
+
+.w-md-editor-preview {
+  background: oklch(0.15 0.04 265) !important;
+  padding: 1rem !important;
+}
+
+.w-md-editor-toolbar {
+  background: oklch(0.18 0.04 265) !important;
+  border-bottom: 1px solid oklch(1 0 0 / 10%) !important;
+}
+
+.w-md-editor-toolbar li button {
+  color: oklch(0.7 0.04 257) !important;
+}
+
+.w-md-editor-toolbar li button:hover {
+  background: oklch(0.28 0.04 260) !important;
+  color: oklch(0.98 0.003 248) !important;
+}
+
+.wmde-markdown {
+  background: transparent !important;
+  color: oklch(0.98 0.003 248) !important;
+}
+
+.wmde-markdown h1,
+.wmde-markdown h2,
+.wmde-markdown h3,
+.wmde-markdown h4,
+.wmde-markdown h5,
+.wmde-markdown h6 {
+  color: oklch(0.98 0.003 248) !important;
+  border-color: oklch(1 0 0 / 10%) !important;
+}
+
+.wmde-markdown code {
+  background: oklch(0.22 0.04 266) !important;
+  color: oklch(0.8 0.15 280) !important;
+}
+
+.wmde-markdown pre {
+  background: oklch(0.18 0.04 265) !important;
+}
+
+.wmde-markdown blockquote {
+  border-left-color: oklch(0.55 0.2 265) !important;
+  color: oklch(0.7 0.04 257) !important;
+}
+
+.wmde-markdown ul,
+.wmde-markdown ol {
+  color: oklch(0.85 0.01 248) !important;
+}
+
+.wmde-markdown a {
+  color: oklch(0.7 0.18 265) !important;
+}
+
+.wmde-markdown table th,
+.wmde-markdown table td {
+  border-color: oklch(1 0 0 / 15%) !important;
+}
+
+.wmde-markdown table tr {
+  background: transparent !important;
+  border-color: oklch(1 0 0 / 10%) !important;
+}
+
+.wmde-markdown table tr:nth-child(2n) {
+  background: oklch(0.18 0.04 265) !important;
 }
