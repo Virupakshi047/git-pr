@@ -112,7 +112,7 @@ export default function Home() {
 
         {/* Footer */}
         <footer className="text-center text-sm text-muted-foreground pt-8 border-t border-border/30">
-          <p>Powered by Groq AI</p>
+          <p>Powered by Groq AI & GitHub</p>
         </footer>
       </div>
     </main>

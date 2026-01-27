@@ -184,13 +184,6 @@ export function GenerateButton({ prData }: GenerateButtonProps) {
                             </Button>
                         </div>
                     </CardHeader>
-                    <CardContent className="pt-4">
-                        <div className="prose prose-invert prose-sm max-w-none">
-                            <pre className="whitespace-pre-wrap text-sm text-muted-foreground font-mono bg-muted/30 rounded-lg p-4 overflow-x-auto">
-                                {aiSummary}
-                            </pre>
-                        </div>
-                    </CardContent>
                 </Card>
             )}
 
