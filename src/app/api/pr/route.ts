@@ -14,26 +14,52 @@ export async function GET(request: NextRequest) {
     }
 
     try {
-        const response = await fetch(
-            `https://api.github.com/repos/${owner}/${repo}/pulls/${pull_number}/files`,
-            {
-                headers: {
-                    Authorization: `token ${process.env.GITHUB_TOKEN}`,
-                    Accept: 'application/vnd.github.v3+json',
-                },
-            }
-        );
+        // Fetch PR details and files in parallel
+        const [prResponse, filesResponse] = await Promise.all([
+            fetch(
+                `https://api.github.com/repos/${owner}/${repo}/pulls/${pull_number}`,
+                {
+                    headers: {
+                        Authorization: `token ${process.env.GITHUB_TOKEN}`,
+                        Accept: 'application/vnd.github.v3+json',
+                    },
+                }
+            ),
+            fetch(
+                `https://api.github.com/repos/${owner}/${repo}/pulls/${pull_number}/files`,
+                {
+                    headers: {
+                        Authorization: `token ${process.env.GITHUB_TOKEN}`,
+                        Accept: 'application/vnd.github.v3+json',
+                    },
+                }
+            ),
+        ]);
 
-        if (!response.ok) {
-            const errorText = await response.text();
+        if (!prResponse.ok) {
+            const errorText = await prResponse.text();
             return NextResponse.json(
-                { error: `GitHub API Error: ${response.status} - ${errorText}` },
-                { status: response.status }
+                { error: `GitHub API Error: ${prResponse.status} - ${errorText}` },
+                { status: prResponse.status }
             );
         }
 
-        const data = await response.json();
-        return NextResponse.json(data);
+        if (!filesResponse.ok) {
+            const errorText = await filesResponse.text();
+            return NextResponse.json(
+                { error: `GitHub API Error: ${filesResponse.status} - ${errorText}` },
+                { status: filesResponse.status }
+            );
+        }
+
+        const prData = await prResponse.json();
+        const filesData = await filesResponse.json();
+
+        return NextResponse.json({
+            title: prData.title,
+            html_url: prData.html_url,
+            files: filesData,
+        });
     } catch (error) {
         console.error('PR Fetch Error:', error);
         return NextResponse.json(

@@ -16,6 +16,8 @@ interface PRFormProps {
         owner: string;
         repo: string;
         pull_number: string;
+        prTitle: string;
+        prLink: string;
     }) => void;
     onError: (error: string) => void;
     onLoading: (loading: boolean) => void;
@@ -45,11 +47,18 @@ export function PRForm({ onPRFetched, onError, onLoading }: PRFormProps) {
             const res = await fetch(
                 `/api/pr?owner=${owner}&repo=${repo}&pull_number=${pull_number}`
             );
-            const files = await res.json();
+            const data = await res.json();
 
-            if (files.error) throw new Error(files.error);
+            if (data.error) throw new Error(data.error);
 
-            onPRFetched({ files, owner, repo, pull_number });
+            onPRFetched({
+                files: data.files,
+                owner,
+                repo,
+                pull_number,
+                prTitle: data.title,
+                prLink: data.html_url,
+            });
         } catch (err) {
             onError(err instanceof Error ? err.message : 'Failed to fetch PR');
         } finally {

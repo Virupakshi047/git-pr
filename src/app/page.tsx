@@ -19,6 +19,8 @@ interface PRData {
   owner: string;
   repo: string;
   pull_number: string;
+  prTitle: string;
+  prLink: string;
 }
 
 export default function Home() {

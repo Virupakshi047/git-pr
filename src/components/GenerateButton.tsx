@@ -21,6 +21,8 @@ interface GenerateButtonProps {
         owner: string;
         repo: string;
         pull_number: string;
+        prTitle: string;
+        prLink: string;
         files: Array<{ filename: string; patch?: string }>;
     } | null;
 }
@@ -84,6 +86,8 @@ export function GenerateButton({ prData }: GenerateButtonProps) {
                 body: JSON.stringify({
                     repo: prData.repo,
                     prNumber: prData.pull_number,
+                    prTitle: prData.prTitle,
+                    prLink: prData.prLink,
                     content: content,
                 }),
             });
