@@ -1,21 +1,28 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { JetBrains_Mono, Outfit } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
+const outfit = Outfit({
   variable: "--font-geist-sans",
   subsets: ["latin"],
+  display: "swap",
 });
 
-const geistMono = Geist_Mono({
+const jetbrainsMono = JetBrains_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "GitHub PR AI Documenter",
-  description: "Automatically generate AI-powered documentation for GitHub Pull Requests",
-  keywords: ["GitHub", "PR", "AI", "Documentation", "Automation"],
+  title: "PR Documenter | AI-Powered GitHub Documentation",
+  description: "Transform your GitHub Pull Requests into comprehensive technical documentation using advanced AI analysis. Fast, accurate, and beautifully formatted.",
+  keywords: ["GitHub", "PR", "AI", "Documentation", "Automation", "Developer Tools", "Code Review"],
+  openGraph: {
+    title: "PR Documenter | AI-Powered GitHub Documentation",
+    description: "Transform GitHub PRs into beautiful technical docs with AI",
+    type: "website",
+  },
 };
 
 export default function RootLayout({
@@ -26,9 +33,19 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950`}
+        className={`${outfit.variable} ${jetbrainsMono.variable} antialiased min-h-screen gradient-bg-noir noise-overlay relative`}
+        style={{ fontFamily: "var(--font-geist-sans), system-ui, sans-serif" }}
       >
-        {children}
+        {/* Subtle grid pattern overlay */}
+        <div className="fixed inset-0 grid-pattern pointer-events-none opacity-50" aria-hidden="true" />
+
+        {/* Gradient orbs for atmosphere */}
+        <div className="fixed top-0 left-1/4 w-96 h-96 bg-cyan-500/5 rounded-full blur-3xl pointer-events-none" aria-hidden="true" />
+        <div className="fixed bottom-0 right-1/4 w-80 h-80 bg-amber-500/5 rounded-full blur-3xl pointer-events-none" aria-hidden="true" />
+
+        <div className="relative z-10">
+          {children}
+        </div>
       </body>
     </html>
   );

@@ -2,9 +2,8 @@
 
 import { useState } from 'react';
 import dynamic from 'next/dynamic';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Edit3, Eye, Split, FileText, Sparkles } from 'lucide-react';
+import { Edit3, Eye, Split, FileText, Sparkles, X, Loader2 } from 'lucide-react';
 import '@uiw/react-md-editor/markdown-editor.css';
 import '@uiw/react-markdown-preview/markdown.css';
 
@@ -40,112 +39,124 @@ export function MarkdownEditor({
         }
     };
 
+    const viewModes: { mode: ViewMode; icon: typeof Edit3; label: string }[] = [
+        { mode: 'edit', icon: Edit3, label: 'Edit' },
+        { mode: 'live', icon: Split, label: 'Split' },
+        { mode: 'preview', icon: Eye, label: 'Preview' },
+    ];
+
     return (
-        <Card className="overflow-hidden bg-card/50 backdrop-blur-xl border-border/50 shadow-2xl">
-            <CardHeader className="py-3 px-4 bg-gradient-to-r from-violet-500/10 via-purple-500/10 to-indigo-500/10 border-b border-border/50">
-                <div className="flex items-center justify-between">
-                    <CardTitle className="flex items-center gap-2 text-lg">
-                        <div className="p-1.5 rounded-lg bg-violet-500/20">
-                            <FileText className="h-4 w-4 text-violet-400" />
-                        </div>
-                        <span className="bg-gradient-to-r from-violet-400 to-purple-400 bg-clip-text text-transparent font-semibold">
-                            AI Generated Documentation
-                        </span>
-                    </CardTitle>
-                    <div className="flex items-center gap-2">
-                        {/* View Mode Toggle */}
-                        <div className="flex items-center bg-muted/50 rounded-lg p-1">
-                            <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => setViewMode('edit')}
-                                className={`h-7 px-2.5 text-xs transition-all ${viewMode === 'edit'
-                                        ? 'bg-violet-500/20 text-violet-400 hover:bg-violet-500/30'
-                                        : 'text-muted-foreground hover:text-foreground'
-                                    }`}
-                            >
-                                <Edit3 className="h-3 w-3 mr-1" />
-                                Edit
-                            </Button>
-                            <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => setViewMode('live')}
-                                className={`h-7 px-2.5 text-xs transition-all ${viewMode === 'live'
-                                        ? 'bg-violet-500/20 text-violet-400 hover:bg-violet-500/30'
-                                        : 'text-muted-foreground hover:text-foreground'
-                                    }`}
-                            >
-                                <Split className="h-3 w-3 mr-1" />
-                                Split
-                            </Button>
-                            <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => setViewMode('preview')}
-                                className={`h-7 px-2.5 text-xs transition-all ${viewMode === 'preview'
-                                        ? 'bg-violet-500/20 text-violet-400 hover:bg-violet-500/30'
-                                        : 'text-muted-foreground hover:text-foreground'
-                                    }`}
-                            >
-                                <Eye className="h-3 w-3 mr-1" />
-                                Preview
-                            </Button>
-                        </div>
+        <div className="glass-card rounded-xl overflow-hidden">
+            {/* Header */}
+            <div className="flex items-center justify-between p-4 border-b border-[var(--noir-600)] bg-[var(--noir-800)]">
+                <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-amber-500/10">
+                        <FileText className="h-4 w-4 text-amber-400" />
                     </div>
-                </div>
-            </CardHeader>
-            <CardContent className="p-0">
-                {/* Markdown Editor */}
-                <div data-color-mode="dark" className="min-h-[400px]">
-                    <MDEditor
-                        value={content}
-                        onChange={(val) => setContent(val || '')}
-                        preview={getPreviewMode()}
-                        height={400}
-                        visibleDragbar={false}
-                        hideToolbar={false}
-                        className="!border-0 !bg-transparent"
-                        textareaProps={{
-                            placeholder: 'Edit your documentation here...',
-                        }}
-                    />
+                    <div className="space-y-0.5">
+                        <h3 className="text-sm font-semibold gradient-text-amber">
+                            Documentation Editor
+                        </h3>
+                        <p className="text-xs text-[var(--noir-500)] font-mono">
+                            Review and customize before saving
+                        </p>
+                    </div>
                 </div>
 
-                {/* Action Buttons */}
-                <div className="flex items-center justify-between p-4 border-t border-border/50 bg-muted/20">
-                    <p className="text-xs text-muted-foreground">
-                        Edit the content above before creating the Google Doc
-                    </p>
-                    <div className="flex items-center gap-3">
-                        <Button
-                            variant="ghost"
-                            onClick={onCancel}
-                            disabled={isSaving}
-                            className="text-muted-foreground hover:text-foreground"
+                {/* View Mode Toggle */}
+                <div className="flex items-center bg-[var(--noir-700)] rounded-lg p-1">
+                    {viewModes.map(({ mode, icon: Icon, label }) => (
+                        <button
+                            key={mode}
+                            onClick={() => setViewMode(mode)}
+                            className={`
+                                flex items-center gap-1.5 px-3 py-1.5 
+                                text-xs font-medium rounded-md
+                                transition-all duration-200
+                                ${viewMode === mode
+                                    ? 'bg-cyan-500/20 text-cyan-400'
+                                    : 'text-[var(--noir-400)] hover:text-white hover:bg-[var(--noir-600)]'
+                                }
+                            `}
                         >
-                            Cancel
-                        </Button>
-                        <Button
-                            onClick={() => onSave(content)}
-                            disabled={isSaving}
-                            className="bg-gradient-to-r from-violet-500 via-purple-500 to-indigo-500 hover:from-violet-600 hover:via-purple-600 hover:to-indigo-600 text-white font-semibold shadow-lg shadow-purple-500/25 transition-all hover:scale-[1.02]"
-                        >
-                            {isSaving ? (
-                                <>
-                                    <Sparkles className="mr-2 h-4 w-4 animate-pulse" />
-                                    Creating Doc...
-                                </>
-                            ) : (
-                                <>
-                                    <Sparkles className="mr-2 h-4 w-4" />
-                                    Create Google Doc
-                                </>
-                            )}
-                        </Button>
-                    </div>
+                            <Icon className="h-3.5 w-3.5" />
+                            <span className="hidden sm:inline">{label}</span>
+                        </button>
+                    ))}
                 </div>
-            </CardContent>
-        </Card>
+            </div>
+
+            {/* Editor */}
+            <div data-color-mode="dark" className="min-h-[400px]">
+                <MDEditor
+                    value={content}
+                    onChange={(val) => setContent(val || '')}
+                    preview={getPreviewMode()}
+                    height={450}
+                    visibleDragbar={false}
+                    hideToolbar={false}
+                    className="!border-0 !bg-transparent !rounded-none"
+                    textareaProps={{
+                        placeholder: 'Edit your documentation here...',
+                        style: {
+                            fontFamily: 'var(--font-geist-mono), ui-monospace, monospace',
+                        }
+                    }}
+                />
+            </div>
+
+            {/* Footer Actions */}
+            <div className="flex items-center justify-between p-4 border-t border-[var(--noir-600)] bg-[var(--noir-850)]">
+                <div className="flex items-center gap-2">
+                    <span className="text-xs text-[var(--noir-500)] font-mono">
+                        {content.length.toLocaleString()} characters
+                    </span>
+                    <span className="text-[var(--noir-600)]">•</span>
+                    <span className="text-xs text-[var(--noir-500)] font-mono">
+                        {content.split('\n').length} lines
+                    </span>
+                </div>
+
+                <div className="flex items-center gap-3">
+                    <Button
+                        variant="ghost"
+                        onClick={onCancel}
+                        disabled={isSaving}
+                        className="
+                            h-10 px-4
+                            text-[var(--noir-400)] hover:text-white
+                            hover:bg-[var(--noir-700)]
+                            transition-all
+                        "
+                    >
+                        <X className="h-4 w-4 mr-2" />
+                        Cancel
+                    </Button>
+
+                    <Button
+                        onClick={() => onSave(content)}
+                        disabled={isSaving}
+                        className="
+                            h-10 px-6
+                            btn-primary rounded-lg
+                            font-semibold
+                            disabled:opacity-50
+                        "
+                    >
+                        {isSaving ? (
+                            <>
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                Creating...
+                            </>
+                        ) : (
+                            <>
+                                <Sparkles className="mr-2 h-4 w-4" />
+                                Create Google Doc
+                            </>
+                        )}
+                    </Button>
+                </div>
+            </div>
+        </div>
     );
 }

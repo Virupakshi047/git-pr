@@ -3,6 +3,11 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* ============================================
+   NOIR TERMINAL - A distinctive dark theme
+   with cyan/amber accents and editorial feel
+   ============================================ */
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -47,72 +52,84 @@
 }
 
 :root {
-  --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.129 0.042 264.695);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.129 0.042 264.695);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.129 0.042 264.695);
-  --primary: oklch(0.208 0.042 265.755);
-  --primary-foreground: oklch(0.984 0.003 247.858);
-  --secondary: oklch(0.968 0.007 247.896);
-  --secondary-foreground: oklch(0.208 0.042 265.755);
-  --muted: oklch(0.968 0.007 247.896);
-  --muted-foreground: oklch(0.554 0.046 257.417);
-  --accent: oklch(0.968 0.007 247.896);
-  --accent-foreground: oklch(0.208 0.042 265.755);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.929 0.013 255.508);
-  --input: oklch(0.929 0.013 255.508);
-  --ring: oklch(0.704 0.04 256.788);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.984 0.003 247.858);
-  --sidebar-foreground: oklch(0.129 0.042 264.695);
-  --sidebar-primary: oklch(0.208 0.042 265.755);
-  --sidebar-primary-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-accent: oklch(0.968 0.007 247.896);
-  --sidebar-accent-foreground: oklch(0.208 0.042 265.755);
-  --sidebar-border: oklch(0.929 0.013 255.508);
-  --sidebar-ring: oklch(0.704 0.04 256.788);
+  --radius: 0.5rem;
+  
+  /* Deep noir palette */
+  --noir-950: #09090b;
+  --noir-900: #0c0c0f;
+  --noir-850: #0f0f14;
+  --noir-800: #131319;
+  --noir-700: #1a1a23;
+  --noir-600: #24242f;
+  --noir-500: #3a3a4a;
+  --noir-400: #52526b;
+  --noir-300: #7a7a96;
+  --noir-200: #a5a5bf;
+  --noir-100: #d4d4e0;
+  
+  /* Accent colors - Cyan & Amber for striking contrast */
+  --accent-cyan: #22d3ee;
+  --accent-cyan-dim: #0891b2;
+  --accent-cyan-glow: rgba(34, 211, 238, 0.15);
+  --accent-amber: #fbbf24;
+  --accent-amber-dim: #d97706;
+  --accent-amber-glow: rgba(251, 191, 36, 0.15);
+  --accent-emerald: #34d399;
+  --accent-rose: #fb7185;
+  
+  /* Theme tokens */
+  --background: var(--noir-950);
+  --foreground: var(--noir-100);
+  --card: var(--noir-850);
+  --card-foreground: var(--noir-100);
+  --popover: var(--noir-800);
+  --popover-foreground: var(--noir-100);
+  --primary: var(--accent-cyan);
+  --primary-foreground: var(--noir-950);
+  --secondary: var(--noir-700);
+  --secondary-foreground: var(--noir-100);
+  --muted: var(--noir-700);
+  --muted-foreground: var(--noir-400);
+  --accent: var(--noir-700);
+  --accent-foreground: var(--noir-100);
+  --destructive: var(--accent-rose);
+  --border: var(--noir-600);
+  --input: var(--noir-700);
+  --ring: var(--accent-cyan);
+  --chart-1: var(--accent-cyan);
+  --chart-2: var(--accent-amber);
+  --chart-3: var(--accent-emerald);
+  --chart-4: var(--accent-rose);
+  --chart-5: var(--noir-300);
+  --sidebar: var(--noir-900);
+  --sidebar-foreground: var(--noir-100);
+  --sidebar-primary: var(--accent-cyan);
+  --sidebar-primary-foreground: var(--noir-950);
+  --sidebar-accent: var(--noir-700);
+  --sidebar-accent-foreground: var(--noir-100);
+  --sidebar-border: var(--noir-600);
+  --sidebar-ring: var(--accent-cyan);
 }
 
 .dark {
-  --background: oklch(0.129 0.042 264.695);
-  --foreground: oklch(0.984 0.003 247.858);
-  --card: oklch(0.208 0.042 265.755);
-  --card-foreground: oklch(0.984 0.003 247.858);
-  --popover: oklch(0.208 0.042 265.755);
-  --popover-foreground: oklch(0.984 0.003 247.858);
-  --primary: oklch(0.929 0.013 255.508);
-  --primary-foreground: oklch(0.208 0.042 265.755);
-  --secondary: oklch(0.279 0.041 260.031);
-  --secondary-foreground: oklch(0.984 0.003 247.858);
-  --muted: oklch(0.279 0.041 260.031);
-  --muted-foreground: oklch(0.704 0.04 256.788);
-  --accent: oklch(0.279 0.041 260.031);
-  --accent-foreground: oklch(0.984 0.003 247.858);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.551 0.027 264.364);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.208 0.042 265.755);
-  --sidebar-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-accent: oklch(0.279 0.041 260.031);
-  --sidebar-accent-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.551 0.027 264.364);
+  --background: var(--noir-950);
+  --foreground: var(--noir-100);
+  --card: var(--noir-850);
+  --card-foreground: var(--noir-100);
+  --popover: var(--noir-800);
+  --popover-foreground: var(--noir-100);
+  --primary: var(--accent-cyan);
+  --primary-foreground: var(--noir-950);
+  --secondary: var(--noir-700);
+  --secondary-foreground: var(--noir-100);
+  --muted: var(--noir-700);
+  --muted-foreground: var(--noir-400);
+  --accent: var(--noir-700);
+  --accent-foreground: var(--noir-100);
+  --destructive: var(--accent-rose);
+  --border: var(--noir-600);
+  --input: var(--noir-700);
+  --ring: var(--accent-cyan);
 }
 
 @layer base {
@@ -122,10 +139,348 @@
 
   body {
     @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
   }
 }
 
-/* Markdown Editor Styles */
+/* ============================================
+   ANIMATIONS & KEYFRAMES
+   ============================================ */
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 20px var(--accent-cyan-glow), 0 0 40px transparent;
+  }
+  50% {
+    box-shadow: 0 0 30px var(--accent-cyan-glow), 0 0 60px var(--accent-cyan-glow);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+@keyframes terminal-cursor {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s ease-out forwards;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+.animate-slide-left {
+  animation: slideInLeft 0.5s ease-out forwards;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.animate-shimmer {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(34, 211, 238, 0.1) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.stagger-1 { animation-delay: 0.1s; }
+.stagger-2 { animation-delay: 0.2s; }
+.stagger-3 { animation-delay: 0.3s; }
+.stagger-4 { animation-delay: 0.4s; }
+.stagger-5 { animation-delay: 0.5s; }
+
+/* ============================================
+   GLASS MORPHISM EFFECTS
+   ============================================ */
+
+.glass {
+  background: rgba(15, 15, 20, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.glass-card {
+  background: linear-gradient(
+    135deg,
+    rgba(20, 20, 28, 0.9) 0%,
+    rgba(15, 15, 22, 0.95) 100%
+  );
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 
+    0 4px 30px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+
+/* ============================================
+   GRADIENT TEXT & BACKGROUNDS
+   ============================================ */
+
+.gradient-text-cyan {
+  background: linear-gradient(135deg, var(--accent-cyan) 0%, #06b6d4 50%, #0891b2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gradient-text-amber {
+  background: linear-gradient(135deg, var(--accent-amber) 0%, #f59e0b 50%, #d97706 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gradient-text-mixed {
+  background: linear-gradient(135deg, var(--accent-cyan) 0%, var(--accent-amber) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gradient-bg-noir {
+  background: 
+    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(34, 211, 238, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse 60% 40% at 80% 100%, rgba(251, 191, 36, 0.05) 0%, transparent 50%),
+    linear-gradient(180deg, var(--noir-950) 0%, var(--noir-900) 100%);
+}
+
+/* ============================================
+   NOISE TEXTURE OVERLAY
+   ============================================ */
+
+.noise-overlay::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  opacity: 0.02;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ============================================
+   GRID PATTERN BACKGROUND
+   ============================================ */
+
+.grid-pattern {
+  background-image: 
+    linear-gradient(to right, rgba(34, 211, 238, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(34, 211, 238, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* ============================================
+   BUTTON STYLES
+   ============================================ */
+
+.btn-primary {
+  position: relative;
+  background: linear-gradient(135deg, var(--accent-cyan) 0%, var(--accent-cyan-dim) 100%);
+  color: var(--noir-950);
+  font-weight: 600;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-primary::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  transition: left 0.5s;
+}
+
+.btn-primary:hover::before {
+  left: 100%;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 
+    0 10px 30px rgba(34, 211, 238, 0.3),
+    0 0 0 1px rgba(34, 211, 238, 0.5);
+}
+
+.btn-secondary {
+  background: transparent;
+  border: 1px solid var(--noir-500);
+  color: var(--noir-200);
+  transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+  border-color: var(--accent-cyan);
+  color: var(--accent-cyan);
+  background: rgba(34, 211, 238, 0.05);
+}
+
+/* ============================================
+   INPUT STYLES
+   ============================================ */
+
+.input-noir {
+  background: var(--noir-800);
+  border: 1px solid var(--noir-600);
+  color: var(--noir-100);
+  transition: all 0.3s ease;
+}
+
+.input-noir:focus {
+  border-color: var(--accent-cyan);
+  box-shadow: 
+    0 0 0 3px rgba(34, 211, 238, 0.1),
+    0 0 20px rgba(34, 211, 238, 0.1);
+  outline: none;
+}
+
+.input-noir::placeholder {
+  color: var(--noir-500);
+}
+
+/* ============================================
+   DIFF VIEWER SPECIFIC STYLES
+   ============================================ */
+
+.diff-addition {
+  background: rgba(52, 211, 153, 0.1);
+  border-left: 3px solid var(--accent-emerald);
+  color: var(--accent-emerald);
+}
+
+.diff-deletion {
+  background: rgba(251, 113, 133, 0.1);
+  border-left: 3px solid var(--accent-rose);
+  color: var(--accent-rose);
+}
+
+.diff-meta {
+  background: rgba(34, 211, 238, 0.08);
+  color: var(--accent-cyan);
+}
+
+.diff-context {
+  color: var(--noir-400);
+}
+
+/* ============================================
+   TERMINAL AESTHETIC
+   ============================================ */
+
+.terminal-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: var(--noir-800);
+  border-bottom: 1px solid var(--noir-600);
+}
+
+.terminal-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.terminal-dot-red { background: #ff5f57; }
+.terminal-dot-yellow { background: #febc2e; }
+.terminal-dot-green { background: #28c840; }
+
+.terminal-cursor::after {
+  content: "▋";
+  animation: terminal-cursor 1s step-end infinite;
+  color: var(--accent-cyan);
+  margin-left: 2px;
+}
+
+/* ============================================
+   SCROLLBAR STYLES
+   ============================================ */
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--noir-900);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--noir-600);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--noir-500);
+}
+
+/* ============================================
+   Markdown Editor Styles
+   ============================================ */
+
 .w-md-editor {
   --md-editor-bg-color: transparent !important;
   --md-editor-border-color: transparent !important;
@@ -139,31 +494,31 @@
 }
 
 .w-md-editor-content {
-  background: oklch(0.15 0.04 265) !important;
+  background: var(--noir-850) !important;
 }
 
 .w-md-editor-preview {
-  background: oklch(0.15 0.04 265) !important;
+  background: var(--noir-850) !important;
   padding: 1rem !important;
 }
 
 .w-md-editor-toolbar {
-  background: oklch(0.18 0.04 265) !important;
-  border-bottom: 1px solid oklch(1 0 0 / 10%) !important;
+  background: var(--noir-800) !important;
+  border-bottom: 1px solid var(--noir-600) !important;
 }
 
 .w-md-editor-toolbar li button {
-  color: oklch(0.7 0.04 257) !important;
+  color: var(--noir-400) !important;
 }
 
 .w-md-editor-toolbar li button:hover {
-  background: oklch(0.28 0.04 260) !important;
-  color: oklch(0.98 0.003 248) !important;
+  background: var(--noir-700) !important;
+  color: var(--noir-100) !important;
 }
 
 .wmde-markdown {
   background: transparent !important;
-  color: oklch(0.98 0.003 248) !important;
+  color: var(--noir-100) !important;
 }
 
 .wmde-markdown h1,
@@ -172,43 +527,83 @@
 .wmde-markdown h4,
 .wmde-markdown h5,
 .wmde-markdown h6 {
-  color: oklch(0.98 0.003 248) !important;
-  border-color: oklch(1 0 0 / 10%) !important;
+  color: var(--noir-100) !important;
+  border-color: var(--noir-600) !important;
 }
 
 .wmde-markdown code {
-  background: oklch(0.22 0.04 266) !important;
-  color: oklch(0.8 0.15 280) !important;
+  background: var(--noir-700) !important;
+  color: var(--accent-cyan) !important;
 }
 
 .wmde-markdown pre {
-  background: oklch(0.18 0.04 265) !important;
+  background: var(--noir-800) !important;
 }
 
 .wmde-markdown blockquote {
-  border-left-color: oklch(0.55 0.2 265) !important;
-  color: oklch(0.7 0.04 257) !important;
+  border-left-color: var(--accent-amber) !important;
+  color: var(--noir-300) !important;
 }
 
 .wmde-markdown ul,
 .wmde-markdown ol {
-  color: oklch(0.85 0.01 248) !important;
+  color: var(--noir-200) !important;
 }
 
 .wmde-markdown a {
-  color: oklch(0.7 0.18 265) !important;
+  color: var(--accent-cyan) !important;
 }
 
 .wmde-markdown table th,
 .wmde-markdown table td {
-  border-color: oklch(1 0 0 / 15%) !important;
+  border-color: var(--noir-600) !important;
 }
 
 .wmde-markdown table tr {
   background: transparent !important;
-  border-color: oklch(1 0 0 / 10%) !important;
+  border-color: var(--noir-600) !important;
 }
 
 .wmde-markdown table tr:nth-child(2n) {
-  background: oklch(0.18 0.04 265) !important;
+  background: var(--noir-800) !important;
+}
+
+/* ============================================
+   UTILITY CLASSES
+   ============================================ */
+
+.glow-cyan {
+  box-shadow: 
+    0 0 20px rgba(34, 211, 238, 0.2),
+    0 0 40px rgba(34, 211, 238, 0.1);
+}
+
+.glow-amber {
+  box-shadow: 
+    0 0 20px rgba(251, 191, 36, 0.2),
+    0 0 40px rgba(251, 191, 36, 0.1);
+}
+
+.border-glow-cyan {
+  border-color: var(--accent-cyan);
+  box-shadow: 0 0 15px rgba(34, 211, 238, 0.15);
+}
+
+.hover-lift {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+}
+
+.text-balance {
+  text-wrap: balance;
+}
+
+/* Focus visible states */
+:focus-visible {
+  outline: 2px solid var(--accent-cyan);
+  outline-offset: 2px;
 }
