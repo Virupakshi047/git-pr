@@ -1,9 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { MarkdownEditor } from '@/components/MarkdownEditor';
+import { DriveSettings } from '@/components/DriveSettings';
 import {
     Loader2,
     Sparkles,
@@ -29,12 +30,29 @@ interface GenerateButtonProps {
 
 type Stage = 'idle' | 'generating' | 'editing' | 'uploading' | 'success';
 
+interface DriveSettingsData {
+    folderId: string | null;
+    folderPath: string;
+    documentName: string;
+}
+
 export function GenerateButton({ prData }: GenerateButtonProps) {
     const [stage, setStage] = useState<Stage>('idle');
     const [aiSummary, setAiSummary] = useState('');
     const [result, setResult] = useState<{ path: string; content: string } | null>(null);
     const [error, setError] = useState('');
     const [copied, setCopied] = useState(false);
+    const [driveSettings, setDriveSettings] = useState<DriveSettingsData>({
+        folderId: null,
+        folderPath: 'Auto (PR-Docs-{date})',
+        documentName: prData ? `${prData.repo}-PR${prData.pull_number}` : '',
+    });
+
+    const defaultDocName = prData ? `${prData.repo}-PR${prData.pull_number}` : '';
+
+    const handleDriveSettingsChange = useCallback((settings: DriveSettingsData) => {
+        setDriveSettings(settings);
+    }, []);
 
     const generateSummary = async () => {
         if (!prData) return;
@@ -89,6 +107,8 @@ export function GenerateButton({ prData }: GenerateButtonProps) {
                     prTitle: prData.prTitle,
                     prLink: prData.prLink,
                     content: content,
+                    folderId: driveSettings.folderId,
+                    documentName: driveSettings.documentName || defaultDocName,
                 }),
             });
 
@@ -130,6 +150,14 @@ export function GenerateButton({ prData }: GenerateButtonProps) {
 
     return (
         <div className="space-y-6">
+            {/* Drive Settings - Only show when idle or editing */}
+            {(stage === 'idle' || stage === 'editing') && (
+                <DriveSettings
+                    defaultDocName={defaultDocName}
+                    onSettingsChange={handleDriveSettingsChange}
+                />
+            )}
+
             {/* Generate Button - Idle State */}
             {stage === 'idle' && (
                 <Button
@@ -238,7 +266,7 @@ export function GenerateButton({ prData }: GenerateButtonProps) {
                                 Creating Google Doc...
                             </p>
                             <p className="text-sm text-[var(--noir-400)] font-mono">
-                                Uploading documentation to Google Drive
+                                Uploading "{driveSettings.documentName || defaultDocName}" to {driveSettings.folderPath}
                             </p>
                         </div>
                         <Loader2 className="h-6 w-6 animate-spin text-amber-400" />
@@ -270,7 +298,7 @@ export function GenerateButton({ prData }: GenerateButtonProps) {
                                     Documentation Created Successfully!
                                 </p>
                                 <p className="text-sm text-[var(--noir-300)]">
-                                    Your technical documentation has been generated and saved to Google Drive.
+                                    "{driveSettings.documentName || defaultDocName}" saved to {driveSettings.folderPath}
                                 </p>
                                 <a
                                     href={result.path}

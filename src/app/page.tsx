@@ -1,10 +1,13 @@
 'use client';
 
 import { useState } from 'react';
+import { useSession } from 'next-auth/react';
 import { PRForm } from '@/components/PRForm';
 import { DiffViewer } from '@/components/DiffViewer';
 import { GenerateButton } from '@/components/GenerateButton';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { AuthButton } from '@/components/AuthButton';
+import { SetupPrompt } from '@/components/SetupPrompt';
 import { GitPullRequest, FileCode, AlertCircle, Zap, Shield, Clock } from 'lucide-react';
 
 interface PRFile {
@@ -24,6 +27,7 @@ interface PRData {
 }
 
 export default function Home() {
+  const { data: session } = useSession();
   const [prData, setPrData] = useState<PRData | null>(null);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -49,7 +53,16 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen py-16 px-4 sm:px-6 lg:px-8">
+    <main className="min-h-screen py-8 px-4 sm:px-6 lg:px-8">
+      {/* Top Navigation Bar */}
+      <nav className="max-w-5xl mx-auto mb-8 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <GitPullRequest className="h-6 w-6 text-cyan-400" />
+          <span className="font-semibold text-white">PR Documenter</span>
+        </div>
+        <AuthButton />
+      </nav>
+      
       <div className="max-w-5xl mx-auto space-y-12">
         {/* Hero Header */}
         <header className="text-center space-y-6 animate-fade-in-up">
@@ -106,6 +119,9 @@ export default function Home() {
             </div>
 
             <div className="p-6 sm:p-8 space-y-6">
+              {/* Setup Prompt for missing connections */}
+              {session && <SetupPrompt type="both" />}
+              
               {/* PR Form */}
               <PRForm
                 onPRFetched={handlePRFetched}

@@ -1,4 +1,27 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getGitHubToken } from '@/lib/auth/credentials';
+
+/**
+ * Parse GitHub API error and return user-friendly message
+ */
+function parseGitHubError(status: number, errorData: any): string {
+    // Handle common GitHub API errors
+    switch (status) {
+        case 401:
+            return 'Authentication failed. Please reconnect your GitHub account in Settings.';
+        case 403:
+            if (errorData?.message?.includes('organization has enabled OAuth App access restrictions')) {
+                return 'This repository belongs to an organization with OAuth restrictions. Please add a Personal Access Token in Settings.';
+            }
+            return 'Access denied. You may not have permission to view this repository.';
+        case 404:
+            return 'Pull request not found. Please check the repository and PR number.';
+        case 422:
+            return 'Invalid request. Please verify the repository owner, name, and PR number.';
+        default:
+            return 'Failed to fetch pull request data. Please try again.';
+    }
+}
 
 export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
@@ -8,8 +31,18 @@ export async function GET(request: NextRequest) {
 
     if (!owner || !repo || !pull_number) {
         return NextResponse.json(
-            { error: 'Missing required parameters: owner, repo, pull_number' },
+            { error: 'Please provide repository owner, name, and PR number.' },
             { status: 400 }
+        );
+    }
+
+    // Get GitHub token from user session or fallback to env
+    const githubToken = await getGitHubToken();
+    
+    if (!githubToken) {
+        return NextResponse.json(
+            { error: 'GitHub authentication required. Please sign in with GitHub.' },
+            { status: 401 }
         );
     }
 
@@ -20,7 +53,7 @@ export async function GET(request: NextRequest) {
                 `https://api.github.com/repos/${owner}/${repo}/pulls/${pull_number}`,
                 {
                     headers: {
-                        Authorization: `token ${process.env.GITHUB_TOKEN}`,
+                        Authorization: `token ${githubToken}`,
                         Accept: 'application/vnd.github.v3+json',
                     },
                 }
@@ -29,7 +62,7 @@ export async function GET(request: NextRequest) {
                 `https://api.github.com/repos/${owner}/${repo}/pulls/${pull_number}/files`,
                 {
                     headers: {
-                        Authorization: `token ${process.env.GITHUB_TOKEN}`,
+                        Authorization: `token ${githubToken}`,
                         Accept: 'application/vnd.github.v3+json',
                     },
                 }
@@ -37,17 +70,48 @@ export async function GET(request: NextRequest) {
         ]);
 
         if (!prResponse.ok) {
-            const errorText = await prResponse.text();
+            let errorData;
+            try {
+                errorData = await prResponse.json();
+            } catch {
+                errorData = null;
+            }
+            
+            const userMessage = parseGitHubError(prResponse.status, errorData);
+            
+            // Log the actual error for debugging
+            console.error('GitHub API Error:', {
+                status: prResponse.status,
+                error: errorData,
+                repo: `${owner}/${repo}`,
+                pr: pull_number
+            });
+            
             return NextResponse.json(
-                { error: `GitHub API Error: ${prResponse.status} - ${errorText}` },
+                { error: userMessage },
                 { status: prResponse.status }
             );
         }
 
         if (!filesResponse.ok) {
-            const errorText = await filesResponse.text();
+            let errorData;
+            try {
+                errorData = await filesResponse.json();
+            } catch {
+                errorData = null;
+            }
+            
+            const userMessage = parseGitHubError(filesResponse.status, errorData);
+            
+            console.error('GitHub API Error (files):', {
+                status: filesResponse.status,
+                error: errorData,
+                repo: `${owner}/${repo}`,
+                pr: pull_number
+            });
+            
             return NextResponse.json(
-                { error: `GitHub API Error: ${filesResponse.status} - ${errorText}` },
+                { error: userMessage },
                 { status: filesResponse.status }
             );
         }
@@ -63,7 +127,7 @@ export async function GET(request: NextRequest) {
     } catch (error) {
         console.error('PR Fetch Error:', error);
         return NextResponse.json(
-            { error: error instanceof Error ? error.message : 'Unknown error' },
+            { error: 'An unexpected error occurred. Please try again.' },
             { status: 500 }
         );
     }
