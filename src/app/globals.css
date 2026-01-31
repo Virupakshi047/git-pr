@@ -487,10 +487,32 @@
 }
 
 .w-md-editor-text-pre>code,
-.w-md-editor-text-input {
-  font-family: var(--font-mono), ui-monospace, monospace !important;
-  font-size: 0.875rem !important;
+.w-md-editor-text-input,
+.w-md-editor-text-pre {
+  font-family: 'JetBrains Mono', 'Consolas', 'Monaco', monospace !important;
+  font-size: 14px !important;
   line-height: 1.6 !important;
+  color: #ffffff !important;
+  padding: 16px !important;
+}
+
+.w-md-editor-text-input {
+  color: #ffffff !important;
+  background: transparent !important;
+  caret-color: #22d3ee !important;
+  padding: 16px !important;
+}
+
+.w-md-editor-text-input::selection {
+  background: rgba(34, 211, 238, 0.3) !important;
+}
+
+.w-md-editor-text-pre {
+  padding: 16px !important;
+}
+
+.w-md-editor-text-pre>code {
+  padding: 0 !important;
 }
 
 .w-md-editor-content {

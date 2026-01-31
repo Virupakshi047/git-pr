@@ -379,13 +379,12 @@ export function DriveSettings({ defaultDocName, onSettingsChange }: DriveSetting
                                     {folders.map((folder) => (
                                         <button
                                             key={folder.id}
-                                            onClick={() => handleSelectFolder(folder)}
-                                            onDoubleClick={() => handleNavigateToFolder(folder.id, folder.name)}
+                                            onClick={() => handleNavigateToFolder(folder.id, folder.name)}
                                             className="w-full flex items-center gap-3 p-3 hover:bg-[var(--noir-800)] transition-colors text-left group"
                                         >
                                             <Folder className="h-5 w-5 text-blue-400 flex-shrink-0" />
                                             <span className="text-white truncate flex-1">{folder.name}</span>
-                                            <ChevronRight className="h-4 w-4 text-[var(--noir-500)] opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
+                                            <ChevronRight className="h-4 w-4 text-[var(--noir-500)] group-hover:text-[var(--noir-400)] transition-colors flex-shrink-0" />
                                         </button>
                                     ))}
                                 </div>
