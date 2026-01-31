@@ -9,7 +9,7 @@ export async function POST(request: NextRequest) {
 
         if (!owner || !repo || !prNumber || !diffData) {
             return NextResponse.json(
-                { error: 'Missing required fields: owner, repo, prNumber, diffData' },
+                { error: 'Missing required information. Please fetch a valid PR first.' },
                 { status: 400 }
             );
         }
@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
     } catch (error) {
         console.error('AI Summary Generation Error:', error);
         return NextResponse.json(
-            { error: `AI Summary generation failed: ${error instanceof Error ? error.message : 'Unknown error'}` },
+            { error: 'Failed to generate documentation. Please try again.' },
             { status: 500 }
         );
     }

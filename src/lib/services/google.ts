@@ -4,8 +4,9 @@ import stream from 'stream';
 import fs from 'fs';
 
 interface UploadOptions {
-    accessToken?: string;  // OAuth access token
-    driveId?: string;      // Optional: specific folder/drive ID
+    accessToken?: string;   // OAuth access token
+    folderId?: string;      // Optional: specific folder ID to save to
+    documentName?: string;  // Optional: custom document name
 }
 
 /**
@@ -49,51 +50,44 @@ export async function uploadToGoogle(
     
     const drive = google.drive({ version: 'v3', auth });
     
-    const dateStr = new Date().toISOString().split('T')[0];
-    const folderName = `PR-Docs-${dateStr}`;
+    let targetFolderId: string;
     
-    // Determine parent folder
-    // If using OAuth, we'll use the user's root Drive
-    // If driveId is provided, use that (shared drive or specific folder)
-    const parentId = options.driveId || 'root';
-    const isSharedDrive = !!(options.driveId && options.driveId !== 'root');
-
-    let folderId: string;
-
-    // Search for existing folder
-    const folderQuery = isSharedDrive
-        ? `name = '${folderName}' and mimeType = 'application/vnd.google-apps.folder' and '${parentId}' in parents and trashed = false`
-        : `name = '${folderName}' and mimeType = 'application/vnd.google-apps.folder' and 'root' in parents and trashed = false`;
-    
-    const listParams: drive_v3.Params$Resource$Files$List = {
-        q: folderQuery,
-        supportsAllDrives: isSharedDrive,
-        includeItemsFromAllDrives: isSharedDrive,
-        fields: 'files(id)',
-    };
-    
-    if (isSharedDrive) {
-        listParams.corpora = 'drive';
-        listParams.driveId = parentId;
-    }
-    
-    const folderSearch = await drive.files.list(listParams);
-
-    if (folderSearch.data.files && folderSearch.data.files.length > 0) {
-        folderId = folderSearch.data.files[0].id!;
+    if (options.folderId) {
+        // Use the specified folder directly
+        targetFolderId = options.folderId;
     } else {
-        // Create new folder
-        const folder = await drive.files.create({
-            supportsAllDrives: isSharedDrive,
-            requestBody: {
-                name: folderName,
-                mimeType: 'application/vnd.google-apps.folder',
-                parents: [parentId],
-            },
-            fields: 'id',
-        });
-        folderId = folder.data.id!;
+        // Auto-create date-based folder if no folder specified
+        const dateStr = new Date().toISOString().split('T')[0];
+        const folderName = `PR-Docs-${dateStr}`;
+        
+        // Search for existing folder in root
+        const folderQuery = `name = '${folderName}' and mimeType = 'application/vnd.google-apps.folder' and 'root' in parents and trashed = false`;
+        
+        const listParams: drive_v3.Params$Resource$Files$List = {
+            q: folderQuery,
+            fields: 'files(id)',
+        };
+        
+        const folderSearch = await drive.files.list(listParams);
+
+        if (folderSearch.data.files && folderSearch.data.files.length > 0) {
+            targetFolderId = folderSearch.data.files[0].id!;
+        } else {
+            // Create new folder in root
+            const folder = await drive.files.create({
+                requestBody: {
+                    name: folderName,
+                    mimeType: 'application/vnd.google-apps.folder',
+                    parents: ['root'],
+                },
+                fields: 'id',
+            });
+            targetFolderId = folder.data.id!;
+        }
     }
+
+    // Determine document name
+    const documentName = options.documentName || `${repo}-PR${prNumber}`;
 
     // Create buffer stream for content
     const bufferStream = new stream.PassThrough();
@@ -101,11 +95,10 @@ export async function uploadToGoogle(
 
     // Create Google Doc
     const doc = await drive.files.create({
-        supportsAllDrives: isSharedDrive,
         requestBody: {
-            name: `${repo}-PR${prNumber}`,
+            name: documentName,
             mimeType: 'application/vnd.google-apps.document',
-            parents: [folderId],
+            parents: [targetFolderId],
         },
         fields: 'id',
         media: {
