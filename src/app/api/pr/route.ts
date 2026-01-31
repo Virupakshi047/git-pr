@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getGitHubToken } from '@/lib/auth/credentials';
 
 export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
@@ -13,6 +14,16 @@ export async function GET(request: NextRequest) {
         );
     }
 
+    // Get GitHub token from user session or fallback to env
+    const githubToken = await getGitHubToken();
+    
+    if (!githubToken) {
+        return NextResponse.json(
+            { error: 'GitHub authentication required. Please sign in with GitHub.' },
+            { status: 401 }
+        );
+    }
+
     try {
         // Fetch PR details and files in parallel
         const [prResponse, filesResponse] = await Promise.all([
@@ -20,7 +31,7 @@ export async function GET(request: NextRequest) {
                 `https://api.github.com/repos/${owner}/${repo}/pulls/${pull_number}`,
                 {
                     headers: {
-                        Authorization: `token ${process.env.GITHUB_TOKEN}`,
+                        Authorization: `token ${githubToken}`,
                         Accept: 'application/vnd.github.v3+json',
                     },
                 }
@@ -29,7 +40,7 @@ export async function GET(request: NextRequest) {
                 `https://api.github.com/repos/${owner}/${repo}/pulls/${pull_number}/files`,
                 {
                     headers: {
-                        Authorization: `token ${process.env.GITHUB_TOKEN}`,
+                        Authorization: `token ${githubToken}`,
                         Accept: 'application/vnd.github.v3+json',
                     },
                 }
@@ -68,3 +79,4 @@ export async function GET(request: NextRequest) {
         );
     }
 }
+
