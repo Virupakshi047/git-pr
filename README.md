@@ -1,36 +1,128 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Git PR Documentation Generator
+
+A Next.js application that automatically generates technical documentation for GitHub Pull Requests using AI.
+
+## Features
+
+- 🔐 GitHub OAuth authentication
+- 📄 Fetch and analyze GitHub PRs
+- 🤖 AI-powered documentation generation using Groq (with NVIDIA Kimi K2.5 fallback)
+- 📊 Export documentation to Google Docs
+- 🎨 Modern, responsive UI
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
 
+- Node.js 18+ installed
+- GitHub account
+- Groq API key (primary)
+- NVIDIA API key (optional, for fallback - Kimi K2.5 model)
+
+### Installation
+
+1. Clone the repository:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone <your-repo-url>
+cd git-pr
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Install dependencies:
+```bash
+npm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Set up environment variables:
+   - Copy `.env.example` to `.env`
+   - Fill in the required values:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+# GitHub OAuth (create at https://github.com/settings/developers)
+GITHUB_ID=your_github_oauth_app_client_id
+GITHUB_SECRET=your_github_oauth_app_client_secret
 
-## Learn More
+# Google OAuth (create at https://console.cloud.google.com/apis/credentials)
+GOOGLE_CLIENT_ID=your_google_oauth_client_id
+GOOGLE_CLIENT_SECRET=your_google_oauth_client_secret
 
-To learn more about Next.js, take a look at the following resources:
+# Groq API (get from https://console.groq.com)
+GROQ_API=your_groq_api_key
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+# NVIDIA API (optional fallback, get from https://build.nvidia.com/)
+NVIDIA_API_KEY=your_nvidia_api_key_here
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+# NextAuth
+NEXTAUTH_URL=http://localhost:3000
+NEXTAUTH_SECRET=your_random_secret_key_here
+```
+
+4. Run the development server:
+```bash
+npm run dev
+```
+
+5. Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+## How It Works
+
+### AI Generation with Fallback
+
+The app uses a smart fallback mechanism for AI generation:
+
+1. **Primary**: Groq API (`openai/gpt-oss-120b` model)
+   - Fast and efficient for most PRs
+   - 8,000 token limit per minute
+
+2. **Fallback**: NVIDIA Kimi K2.5 API (`moonshotai/kimi-k2.5` model)
+   - Automatically used when Groq hits rate limits
+   - Handles larger PRs with more changes
+   - 16,384 max tokens - 2x larger than Groq
+
+3. **Automatic Truncation**: 
+   - Diff data is automatically truncated to fit within token limits
+   - Limits: 20 files max, 100 lines per file
+   - Ensures successful generation even for very large PRs
+
+### Error Handling
+
+The app handles several error scenarios:
+
+- **413 Rate Limit Error**: Automatically falls back to NVIDIA Kimi K2.5
+- **Large PRs**: Truncates diff data intelligently
+- **API Failures**: Provides clear error messages to users
+
+## Usage
+
+1. Sign in with your GitHub account
+2. Enter the repository owner, name, and PR number
+3. Click "Fetch PR" to load the pull request
+4. Click "Generate Summary" to create AI documentation
+5. Optionally export to Google Docs
 
 ## Deploy on Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme).
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Check out the [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Troubleshooting
+
+### "Request too large" Error
+
+If you see a 413 error:
+1. The app will automatically try NVIDIA Kimi K2.5 as fallback
+2. If both fail, the PR is too large - try a smaller PR
+3. Consider adding your NVIDIA API key for better fallback support
+
+### Authentication Issues
+
+- Ensure your OAuth apps are properly configured
+- Check that redirect URLs match your deployment URL
+- Verify all environment variables are set correctly
+
+## Learn More
+
+- [Next.js Documentation](https://nextjs.org/docs)
+- [Groq API Documentation](https://console.groq.com/docs)
+- [NVIDIA NIM API](https://build.nvidia.com/)
+
