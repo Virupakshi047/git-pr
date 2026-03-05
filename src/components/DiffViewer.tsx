@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { FileCode, Plus, Minus, Copy, Check, ChevronDown, ChevronRight, File } from 'lucide-react';
+import { FileCode, Plus, Minus, Copy, Check, ChevronDown, ChevronRight, File, Files } from 'lucide-react';
 
 interface DiffFile {
     filename: string;
@@ -217,6 +217,18 @@ export function DiffViewer({ files }: DiffViewerProps) {
     const totalAdditions = files.reduce((sum, f) => sum + f.additions, 0);
     const totalDeletions = files.reduce((sum, f) => sum + f.deletions, 0);
 
+    const [allCopied, setAllCopied] = useState(false);
+
+    const handleCopyAll = async () => {
+        const allPatches = files
+            .filter((f) => f.patch)
+            .map((f) => `### ${f.filename}\n\`\`\`diff\n${f.patch}\n\`\`\``)
+            .join('\n\n');
+        await navigator.clipboard.writeText(allPatches);
+        setAllCopied(true);
+        setTimeout(() => setAllCopied(false), 2000);
+    };
+
     return (
         <div className="space-y-4">
             {/* Summary Stats Bar */}
@@ -236,6 +248,23 @@ export function DiffViewer({ files }: DiffViewerProps) {
                         <Minus className="h-4 w-4" />
                         {totalDeletions} deletions
                     </span>
+                    {/* Copy All Diffs */}
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={handleCopyAll}
+                        className="h-7 px-3 text-[var(--noir-400)] hover:text-white hover:bg-[var(--noir-700)] transition-all"
+                        title="Copy all diffs"
+                    >
+                        {allCopied ? (
+                            <Check className="h-3.5 w-3.5 text-emerald-400" />
+                        ) : (
+                            <Files className="h-3.5 w-3.5" />
+                        )}
+                        <span className="ml-1.5 text-xs hidden sm:inline">
+                            {allCopied ? 'Copied!' : 'Copy All'}
+                        </span>
+                    </Button>
                 </div>
             </div>
 

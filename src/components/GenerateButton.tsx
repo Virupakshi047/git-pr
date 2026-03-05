@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { MarkdownEditor } from '@/components/MarkdownEditor';
@@ -15,7 +15,10 @@ import {
     Check,
     FileText,
     Wand2,
+    RefreshCw,
+    History,
 } from 'lucide-react';
+import { saveHistoryEntry, findHistoryEntry, type HistoryEntry } from '@/components/HistoryPanel';
 
 interface GenerateButtonProps {
     prData: {
@@ -42,6 +45,7 @@ export function GenerateButton({ prData }: GenerateButtonProps) {
     const [result, setResult] = useState<{ path: string; content: string } | null>(null);
     const [error, setError] = useState('');
     const [copied, setCopied] = useState(false);
+    const [existingEntry, setExistingEntry] = useState<HistoryEntry | null>(null);
     const [driveSettings, setDriveSettings] = useState<DriveSettingsData>({
         folderId: null,
         folderPath: 'Auto (PR-Docs-{date})',
@@ -49,6 +53,19 @@ export function GenerateButton({ prData }: GenerateButtonProps) {
     });
 
     const defaultDocName = prData ? `${prData.repo}-PR${prData.pull_number}` : '';
+    const prKey = prData ? `${prData.owner}/${prData.repo}#${prData.pull_number}` : '';
+
+    // On mount / prData change: check if already documented
+    useEffect(() => {
+        if (!prKey) return;
+        const found = findHistoryEntry(prKey);
+        setExistingEntry(found);
+        // Reset generation state when prData changes
+        setStage('idle');
+        setAiSummary('');
+        setResult(null);
+        setError('');
+    }, [prKey]);
 
     const handleDriveSettingsChange = useCallback((settings: DriveSettingsData) => {
         setDriveSettings(settings);
@@ -117,6 +134,26 @@ export function GenerateButton({ prData }: GenerateButtonProps) {
             if (res.ok) {
                 setResult({ path: data.path, content });
                 setStage('success');
+                // Save to history
+                const docTitle = driveSettings.documentName || defaultDocName;
+                saveHistoryEntry({
+                    prKey,
+                    prTitle: prData.prTitle,
+                    prLink: prData.prLink,
+                    docTitle,
+                    docLink: data.path,
+                    folderPath: driveSettings.folderPath,
+                    createdAt: new Date().toISOString(),
+                });
+                setExistingEntry({
+                    prKey,
+                    prTitle: prData.prTitle,
+                    prLink: prData.prLink,
+                    docTitle,
+                    docLink: data.path,
+                    folderPath: driveSettings.folderPath,
+                    createdAt: new Date().toISOString(),
+                });
             } else {
                 throw new Error(data.error);
             }
@@ -150,7 +187,40 @@ export function GenerateButton({ prData }: GenerateButtonProps) {
 
     return (
         <div className="space-y-6">
-            {/* Drive Settings - Only show when idle or editing */}
+            {/* Existing Doc Banner - shown when PR was already documented */}
+            {existingEntry && stage === 'idle' && (
+                <div className="flex items-start gap-3 px-4 py-3.5 rounded-xl bg-purple-500/10 border border-purple-500/25 animate-fade-in">
+                    <div className="mt-0.5 shrink-0 p-1.5 rounded-lg bg-purple-500/15">
+                        <History className="h-4 w-4 text-purple-400" />
+                    </div>
+                    <div className="flex-1 min-w-0 space-y-1">
+                        <p className="text-sm font-semibold text-purple-300">Already documented</p>
+                        <p className="text-xs text-[var(--noir-400)] font-mono">
+                            This PR was previously saved to&nbsp;
+                            <span className="text-[var(--noir-300)]">{existingEntry.folderPath}</span>
+                        </p>
+                        <a
+                            href={existingEntry.docLink}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1.5 text-xs text-cyan-400 hover:text-cyan-300 transition-colors font-medium mt-0.5"
+                        >
+                            <ExternalLink className="h-3 w-3" />
+                            {existingEntry.docTitle}
+                        </a>
+                    </div>
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={generateSummary}
+                        className="shrink-0 h-8 px-3 gap-1.5 text-xs font-mono text-[var(--noir-400)] hover:text-white hover:bg-[var(--noir-700)] transition-all"
+                        title="Re-analyze this PR"
+                    >
+                        <RefreshCw className="h-3.5 w-3.5" />
+                        Re-analyze
+                    </Button>
+                </div>
+            )}
             {(stage === 'idle' || stage === 'editing') && (
                 <DriveSettings
                     defaultDocName={defaultDocName}

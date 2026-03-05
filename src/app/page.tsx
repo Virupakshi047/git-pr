@@ -8,6 +8,7 @@ import { GenerateButton } from '@/components/GenerateButton';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AuthButton } from '@/components/AuthButton';
 import { SetupPrompt } from '@/components/SetupPrompt';
+import { HistoryPanel, type HistoryEntry } from '@/components/HistoryPanel';
 import { GitPullRequest, FileCode, AlertCircle, Zap, Shield, Clock } from 'lucide-react';
 
 interface PRFile {
@@ -25,6 +26,9 @@ interface PRData {
   prTitle: string;
   prLink: string;
 }
+
+// Minimal placeholder files for history-loaded entries (no diff available)
+const PLACEHOLDER_FILES: PRFile[] = [];
 
 export default function Home() {
   const { data: session } = useSession();
@@ -50,6 +54,23 @@ export default function Home() {
     if (loading) {
       setStatusMessage('Establishing connection...');
     }
+  };
+
+  const handleLoadHistory = (entry: HistoryEntry) => {
+    // Parse prKey: "owner/repo#pullNumber"
+    const match = entry.prKey.match(/^([^/]+)\/([^#]+)#(\d+)$/);
+    if (!match) return;
+    const [, owner, repo, pull_number] = match;
+    setPrData({
+      files: PLACEHOLDER_FILES,
+      owner,
+      repo,
+      pull_number,
+      prTitle: entry.prTitle,
+      prLink: entry.prLink,
+    });
+    setError('');
+    setStatusMessage(`Loaded history entry for ${entry.prKey}.`);
   };
 
   return (
@@ -104,6 +125,11 @@ export default function Home() {
             </div>
           </div>
         </header>
+
+        {/* History Panel */}
+        <section className="animate-fade-in-up stagger-2">
+          <HistoryPanel onLoadEntry={handleLoadHistory} />
+        </section>
 
         {/* Main Action Card */}
         <section className="animate-fade-in-up stagger-3">
