@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Loader2, GitPullRequest, ArrowRight, Search } from 'lucide-react';
+import { Loader2, ArrowRight, Link2 } from 'lucide-react';
 import type { PRData } from '@/lib/types';
 
 interface PRFormProps {
@@ -15,14 +15,13 @@ interface PRFormProps {
 export function PRForm({ onPRFetched, onError, onLoading }: PRFormProps) {
     const [prLink, setPrLink] = useState('');
     const [isLoading, setIsLoading] = useState(false);
-    const [isFocused, setIsFocused] = useState(false);
 
     const fetchPR = async () => {
         const regex = /github\.com\/([^/]+)\/([^/]+)\/pull\/(\d+)/;
         const match = prLink.match(regex);
 
         if (!match) {
-            onError('Invalid URL format. Please use a valid GitHub PR link.');
+            onError('Invalid URL. Expected format: github.com/owner/repo/pull/123');
             return;
         }
 
@@ -33,21 +32,10 @@ export function PRForm({ onPRFetched, onError, onLoading }: PRFormProps) {
         onError('');
 
         try {
-            const res = await fetch(
-                `/api/pr?owner=${owner}&repo=${repo}&pull_number=${pull_number}`
-            );
+            const res = await fetch(`/api/pr?owner=${owner}&repo=${repo}&pull_number=${pull_number}`);
             const data = await res.json();
-
             if (data.error) throw new Error(data.error);
-
-            onPRFetched({
-                files: data.files,
-                owner,
-                repo,
-                pull_number,
-                prTitle: data.title,
-                prLink: data.html_url,
-            });
+            onPRFetched({ files: data.files, owner, repo, pull_number, prTitle: data.title, prLink: data.html_url });
         } catch (err) {
             onError(err instanceof Error ? err.message : 'Failed to fetch PR');
         } finally {
@@ -57,77 +45,53 @@ export function PRForm({ onPRFetched, onError, onLoading }: PRFormProps) {
     };
 
     return (
-        <div className="space-y-4">
-            {/* Label */}
-            <label htmlFor="pr-input" className="flex items-center gap-2 text-sm font-medium text-[var(--noir-300)]">
-                <Search className="h-4 w-4 text-cyan-400" />
-                Enter GitHub Pull Request URL
+        <div className="space-y-3">
+            <label htmlFor="pr-input" className="flex items-center gap-2 text-xs font-medium text-[var(--noir-400)] uppercase tracking-wider">
+                <Link2 className="h-3.5 w-3.5" />
+                Pull Request URL
             </label>
 
-            {/* Input Group */}
-            <div className={`
-                flex flex-col sm:flex-row gap-3 p-1.5 rounded-xl 
-                transition-all duration-300
-                ${isFocused
-                    ? 'bg-[var(--noir-800)] ring-2 ring-cyan-500/30'
-                    : 'bg-[var(--noir-850)]'
-                }
-            `}>
+            <div className="flex gap-2">
                 <div className="relative flex-1">
-                    <div className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none">
-                        <GitPullRequest
-                            className={`h-5 w-5 transition-colors duration-300 ${isFocused ? 'text-cyan-400' : 'text-[var(--noir-500)]'
-                                }`}
-                        />
-                    </div>
                     <Input
                         id="pr-input"
                         type="text"
                         value={prLink}
                         onChange={(e) => setPrLink(e.target.value)}
-                        onFocus={() => setIsFocused(true)}
-                        onBlur={() => setIsFocused(false)}
+                        onKeyDown={(e) => e.key === 'Enter' && !isLoading && prLink.trim() && fetchPR()}
                         placeholder="https://github.com/owner/repo/pull/123"
                         className="
-                            pl-12 h-14 text-base font-mono
-                            bg-transparent border-0
+                            h-11 pl-4 pr-4 font-mono text-sm
+                            bg-[var(--noir-800)]
+                            border border-[rgba(255,255,255,0.08)]
                             text-white placeholder:text-[var(--noir-500)]
-                            focus:ring-0 focus:outline-none
-                            focus-visible:ring-0 focus-visible:outline-none
+                            rounded-xl
+                            transition-all duration-200
+                            focus-visible:border-violet-500/60
+                            focus-visible:ring-2 focus-visible:ring-violet-500/15
+                            focus-visible:ring-offset-0
                         "
-                        onKeyDown={(e) => e.key === 'Enter' && fetchPR()}
                     />
                 </div>
 
                 <Button
                     onClick={fetchPR}
                     disabled={isLoading || !prLink.trim()}
-                    className="
-                        h-14 px-8 sm:px-6
-                        btn-primary rounded-lg
-                        text-base font-semibold tracking-wide
-                        disabled:opacity-40 disabled:cursor-not-allowed
-                        disabled:hover:transform-none
-                    "
+                    className="h-11 px-5 btn-primary rounded-xl shrink-0 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:transform-none"
                 >
                     {isLoading ? (
-                        <>
-                            <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                            <span className="hidden sm:inline">Analyzing...</span>
-                            <span className="sm:hidden">...</span>
-                        </>
+                        <Loader2 className="h-4 w-4 animate-spin" />
                     ) : (
                         <>
-                            <span>Analyze</span>
-                            <ArrowRight className="ml-2 h-5 w-5" />
+                            <span className="text-sm font-semibold">Fetch</span>
+                            <ArrowRight className="h-4 w-4" />
                         </>
                     )}
                 </Button>
             </div>
 
-            {/* Helper Text */}
-            <p className="text-xs text-[var(--noir-500)] font-mono">
-                <span className="text-cyan-400/60">tip:</span> paste any public GitHub PR URL to get started
+            <p className="text-[11px] text-[var(--noir-500)]">
+                Supports any public or private GitHub repository you have access to.
             </p>
         </div>
     );

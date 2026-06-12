@@ -35,15 +35,16 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body
-        className={`${outfit.variable} ${jetbrainsMono.variable} antialiased min-h-screen gradient-bg-noir noise-overlay relative`}
+        className={`${outfit.variable} ${jetbrainsMono.variable} antialiased min-h-screen gradient-bg-noir relative`}
         style={{ fontFamily: "var(--font-geist-sans), system-ui, sans-serif" }}
       >
-        {/* Subtle grid pattern overlay */}
-        <div className="fixed inset-0 grid-pattern pointer-events-none opacity-50" aria-hidden="true" />
+        {/* Dot grid */}
+        <div className="fixed inset-0 dot-grid pointer-events-none opacity-60" aria-hidden="true" />
 
-        {/* Gradient orbs for atmosphere */}
-        <div className="fixed top-0 left-1/4 w-96 h-96 bg-cyan-500/5 rounded-full blur-3xl pointer-events-none" aria-hidden="true" />
-        <div className="fixed bottom-0 right-1/4 w-80 h-80 bg-amber-500/5 rounded-full blur-3xl pointer-events-none" aria-hidden="true" />
+        {/* Ambient violet glow — top center */}
+        <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[700px] h-[350px] bg-violet-500/[0.055] rounded-full blur-[120px] pointer-events-none" aria-hidden="true" />
+        {/* Subtle amber tint — bottom right */}
+        <div className="fixed bottom-0 right-0 w-[400px] h-[300px] bg-amber-500/[0.03] rounded-full blur-[100px] pointer-events-none" aria-hidden="true" />
 
         <div className="relative z-10">
           <Providers>
