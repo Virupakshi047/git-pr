@@ -19,16 +19,10 @@ import {
     History,
 } from 'lucide-react';
 import { saveHistoryEntry, findHistoryEntry, type HistoryEntry } from '@/components/HistoryPanel';
+import type { PRData } from '@/lib/types';
 
 interface GenerateButtonProps {
-    prData: {
-        owner: string;
-        repo: string;
-        pull_number: string;
-        prTitle: string;
-        prLink: string;
-        files: Array<{ filename: string; patch?: string }>;
-    } | null;
+    prData: PRData | null;
 }
 
 type Stage = 'idle' | 'generating' | 'editing' | 'uploading' | 'success';

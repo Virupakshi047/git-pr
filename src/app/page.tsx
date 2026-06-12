@@ -10,25 +10,7 @@ import { AuthButton } from '@/components/AuthButton';
 import { SetupPrompt } from '@/components/SetupPrompt';
 import { HistoryPanel, type HistoryEntry } from '@/components/HistoryPanel';
 import { GitPullRequest, FileCode, AlertCircle, Zap, Shield, Clock } from 'lucide-react';
-
-interface PRFile {
-  filename: string;
-  additions: number;
-  deletions: number;
-  patch?: string;
-}
-
-interface PRData {
-  files: PRFile[];
-  owner: string;
-  repo: string;
-  pull_number: string;
-  prTitle: string;
-  prLink: string;
-}
-
-// Minimal placeholder files for history-loaded entries (no diff available)
-const PLACEHOLDER_FILES: PRFile[] = [];
+import type { PRData } from '@/lib/types';
 
 export default function Home() {
   const { data: session } = useSession();
@@ -62,7 +44,7 @@ export default function Home() {
     if (!match) return;
     const [, owner, repo, pull_number] = match;
     setPrData({
-      files: PLACEHOLDER_FILES,
+      files: [],
       owner,
       repo,
       pull_number,

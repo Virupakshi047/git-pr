@@ -1,5 +1,3 @@
-// TypeScript interfaces for the application
-
 export interface PRFile {
     filename: string;
     additions: number;
@@ -14,19 +12,15 @@ export interface PRData {
     owner: string;
     repo: string;
     pull_number: string;
+    prTitle: string;
+    prLink: string;
 }
 
-export interface GenerateDocsRequest {
+export interface GenerateSummaryRequest {
     owner: string;
     repo: string;
     prNumber: string;
     diffData: { filename: string; patch?: string }[];
-}
-
-export interface GenerateDocsResponse {
-    message: string;
-    path: string;
-    content: string;
 }
 
 export interface APIError {

@@ -20,9 +20,6 @@ import Link from "next/link"
 import Image from "next/image"
 import { useState, useEffect } from "react"
 
-// Cookie name for PAT
-const PAT_COOKIE = "pr-doc-github-pat"
-
 export default function SettingsPage() {
     const { data: session, status } = useSession()
     const [patToken, setPatToken] = useState("")

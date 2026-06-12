@@ -1,31 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { generateWithGroq, RateLimitError } from '@/lib/services/groq';
+import { generateWithOpenRouter, RateLimitError } from '@/lib/services/openrouter';
 import { generateWithNvidia } from '@/lib/services/nvidia';
-import { GenerateDocsRequest } from '@/lib/types';
-
-function truncateDiffData(diffData: any, maxFiles: number = 20, maxLinesPerFile: number = 100): any {
-    if (!Array.isArray(diffData)) {
-        return diffData;
-    }
-
-    return diffData.slice(0, maxFiles).map((file: any) => {
-        if (file.patch) {
-            const lines = file.patch.split('\n');
-            if (lines.length > maxLinesPerFile) {
-                const truncatedPatch = lines.slice(0, maxLinesPerFile).join('\n');
-                return {
-                    ...file,
-                    patch: truncatedPatch + `\n... [${lines.length - maxLinesPerFile} more lines]`,
-                };
-            }
-        }
-        return file;
-    });
-}
+import { truncateDiffData } from '@/lib/utils';
+import type { GenerateSummaryRequest } from '@/lib/types';
 
 export async function POST(request: NextRequest) {
     try {
-        const body: GenerateDocsRequest = await request.json();
+        const body: GenerateSummaryRequest = await request.json();
         const { owner, repo, prNumber, diffData } = body;
 
         if (!owner || !repo || !prNumber || !diffData) {
@@ -67,11 +48,10 @@ export async function POST(request: NextRequest) {
         let usedFallback = false;
 
         try {
-            // Try Groq first
-            mdContent = await generateWithGroq(prompt);
+            mdContent = await generateWithOpenRouter(prompt);
         } catch (error) {
             if (error instanceof RateLimitError) {
-                console.log('Groq rate limit hit, falling back to NVIDIA Kimi K2.5...');
+                console.log('OpenRouter rate limit hit, falling back to NVIDIA Kimi K2.5...');
                 
                 try {
                     // Fallback to NVIDIA Kimi K2.5
@@ -92,7 +72,7 @@ export async function POST(request: NextRequest) {
             }
         }
 
-        console.log(`Generated AI summary${usedFallback ? ' (using Gemini fallback)' : ''}`);
+        console.log(`Generated AI summary using ${usedFallback ? 'NVIDIA Kimi K2.5 (fallback)' : 'OpenRouter (Llama 3.3 70B)'}`);
 
         return NextResponse.json({
             message: 'Success',

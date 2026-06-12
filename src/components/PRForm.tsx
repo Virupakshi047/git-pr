@@ -4,21 +4,10 @@ import { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Loader2, GitPullRequest, ArrowRight, Search } from 'lucide-react';
+import type { PRData } from '@/lib/types';
 
 interface PRFormProps {
-    onPRFetched: (data: {
-        files: Array<{
-            filename: string;
-            additions: number;
-            deletions: number;
-            patch?: string;
-        }>;
-        owner: string;
-        repo: string;
-        pull_number: string;
-        prTitle: string;
-        prLink: string;
-    }) => void;
+    onPRFetched: (data: PRData) => void;
     onError: (error: string) => void;
     onLoading: (loading: boolean) => void;
 }

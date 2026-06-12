@@ -3,16 +3,10 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { FileCode, Plus, Minus, Copy, Check, ChevronDown, ChevronRight, File, Files } from 'lucide-react';
-
-interface DiffFile {
-    filename: string;
-    additions: number;
-    deletions: number;
-    patch?: string;
-}
+import type { PRFile } from '@/lib/types';
 
 interface DiffViewerProps {
-    files: DiffFile[];
+    files: PRFile[];
 }
 
 function getFileExtension(filename: string): string {
@@ -77,7 +71,7 @@ function formatPatch(patch?: string) {
     });
 }
 
-function DiffCard({ file, index }: { file: DiffFile; index: number }) {
+function DiffCard({ file, index }: { file: PRFile; index: number }) {
     const [copied, setCopied] = useState(false);
     const [isExpanded, setIsExpanded] = useState(true);
     const extension = getFileExtension(file.filename);
@@ -211,13 +205,12 @@ function DiffCard({ file, index }: { file: DiffFile; index: number }) {
 }
 
 export function DiffViewer({ files }: DiffViewerProps) {
+    const [allCopied, setAllCopied] = useState(false);
+
     if (files.length === 0) return null;
 
-    // Calculate total stats
     const totalAdditions = files.reduce((sum, f) => sum + f.additions, 0);
     const totalDeletions = files.reduce((sum, f) => sum + f.deletions, 0);
-
-    const [allCopied, setAllCopied] = useState(false);
 
     const handleCopyAll = async () => {
         const allPatches = files
